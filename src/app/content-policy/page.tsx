@@ -2,19 +2,16 @@ export const metadata = { title: "Content Policy" };
 
 export default function ContentPolicyPage() {
   return (
-    <div className="mx-auto max-w-3xl px-4 py-16 prose prose-neutral">
-      <h1>Content Policy</h1>
-      <p>All workflow listings must:</p>
-      <ul>
-        <li>Be functional n8n workflow JSON with valid nodes and connections</li>
-        <li>Contain no embedded credentials, API keys, or secrets</li>
-        <li>Not facilitate illegal activity, spam, or malware distribution</li>
-        <li>Not infringe on third-party intellectual property</li>
+    <div className="page-shell max-w-2xl py-16">
+      <p className="section-label mb-3">Legal</p>
+      <h1 className="font-display text-3xl font-bold">Content Policy</h1>
+      <ul className="mt-8 list-inside list-disc space-y-2 text-muted leading-relaxed">
+        <li>Valid n8n workflow JSON with nodes and connections</li>
+        <li>No embedded credentials or API keys</li>
+        <li>No illegal activity, spam, or malware</li>
+        <li>No third-party IP infringement</li>
       </ul>
-      <p>
-        Violations may result in listing removal and account suspension. Report
-        issues to support@n8nify.io.
-      </p>
+      <p className="mt-6 text-muted">Report issues to support@n8nify.io</p>
     </div>
   );
 }

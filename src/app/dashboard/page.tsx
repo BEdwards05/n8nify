@@ -12,38 +12,39 @@ export default async function DashboardPage() {
   const purchases = await getUserPurchases(session.user.id);
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-10">
-      <h1 className="mb-2 text-2xl font-semibold">My purchases</h1>
-      <p className="mb-8 text-muted">Workflows you own</p>
+    <div className="page-shell py-12 md:py-16">
+      <p className="section-label mb-2">Account</p>
+      <h1 className="font-display text-3xl font-bold">Purchases</h1>
+      <p className="mt-1 text-muted">Workflows you own</p>
 
       {purchases.length === 0 ? (
-        <div className="rounded-lg border border-border p-8 text-center">
-          <p className="mb-4 text-muted">No purchases yet.</p>
-          <Link href="/workflows" className="text-accent hover:underline">
+        <div className="mt-12 border-t border-line pt-12 text-center">
+          <p className="text-muted">No purchases yet.</p>
+          <Link href="/workflows" className="btn btn-ghost mt-6 inline-flex">
             Browse workflows
           </Link>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="mt-10 divide-y divide-line border-y border-line">
           {purchases.map(({ purchase, listing }) => (
             <div
               key={purchase.id}
-              className="flex items-center justify-between rounded-lg border border-border p-4"
+              className="flex flex-col gap-3 py-5 sm:flex-row sm:items-center sm:justify-between"
             >
               <div>
                 <Link
                   href={`/workflows/${listing.slug}`}
-                  className="font-medium hover:text-accent"
+                  className="font-display font-semibold transition hover:text-accent"
                 >
                   {listing.title}
                 </Link>
-                <p className="text-sm text-muted">
-                  Purchased {purchase.createdAt.toLocaleDateString()}
+                <p className="mt-1 text-sm text-muted-dim">
+                  {purchase.createdAt.toLocaleDateString()}
                 </p>
               </div>
               <a
                 href={`/api/workflows/${listing.id}/download`}
-                className="rounded-md border border-border px-3 py-1.5 text-sm hover:bg-background"
+                className="btn btn-ghost shrink-0"
               >
                 Download
               </a>

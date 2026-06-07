@@ -3,7 +3,7 @@ import { ListingForm } from "@/components/listing-form";
 import { getSession } from "@/lib/auth-server";
 import { getAllCategories } from "@/lib/queries/listings";
 
-export const metadata = { title: "New Listing" };
+export const metadata = { title: "New listing" };
 
 export default async function NewListingPage() {
   const session = await getSession();
@@ -11,9 +11,12 @@ export default async function NewListingPage() {
   const categories = await getAllCategories();
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10">
-      <h1 className="mb-8 text-2xl font-semibold">New workflow listing</h1>
-      <ListingForm categories={categories} />
+    <div className="page-shell py-12 md:py-16">
+      <p className="section-label mb-2">New</p>
+      <h1 className="font-display text-3xl font-bold">List a workflow</h1>
+      <div className="mt-10">
+        <ListingForm categories={categories} />
+      </div>
     </div>
   );
 }

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { BrandLogo } from "@/components/brand-logo";
 import { authClient } from "@/lib/auth-client";
 
 function LoginForm() {
@@ -15,12 +16,18 @@ function LoginForm() {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    const { error: err } = await authClient.signIn.email({
-      email,
-      password,
-      callbackURL: next,
-    });
-    if (err) setError(err.message ?? "Sign in failed");
+    try {
+      const { error: err } = await authClient.signIn.email({
+        email,
+        password,
+        callbackURL: next,
+      });
+      if (err) setError(err.message ?? "Sign in failed");
+    } catch {
+      setError(
+        "Could not reach the auth server. Make sure you're on http://localhost:3001 (n8nify dev port).",
+      );
+    }
   }
 
   return (
@@ -31,7 +38,8 @@ function LoginForm() {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="Email"
-        className="w-full rounded-md border border-border px-3 py-2"
+        className="input"
+        autoComplete="email"
       />
       <input
         type="password"
@@ -39,13 +47,11 @@ function LoginForm() {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder="Password"
-        className="w-full rounded-md border border-border px-3 py-2"
+        className="input"
+        autoComplete="current-password"
       />
-      {error && <p className="text-sm text-red-600">{error}</p>}
-      <button
-        type="submit"
-        className="w-full rounded-md bg-accent py-2.5 text-white hover:bg-accent-hover"
-      >
+      {error && <p className="text-sm text-accent">{error}</p>}
+      <button type="submit" className="btn btn-primary w-full py-3">
         Sign in
       </button>
     </form>
@@ -54,17 +60,22 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="mx-auto max-w-md px-4 py-16">
-      <h1 className="mb-2 text-2xl font-semibold">Sign in</h1>
-      <p className="mb-8 text-sm text-muted">
-        New here?{" "}
-        <Link href="/register" className="text-accent hover:underline">
-          Create an account
-        </Link>
-      </p>
-      <Suspense fallback={<p className="text-muted">Loading...</p>}>
-        <LoginForm />
-      </Suspense>
+    <div className="page-shell flex min-h-[calc(100svh-12rem)] items-center justify-center py-16">
+      <div className="w-full max-w-sm">
+        <div className="mb-10 text-center">
+          <BrandLogo className="inline-block" />
+          <h1 className="mt-6 font-display text-2xl font-semibold">Welcome back</h1>
+          <p className="mt-2 text-sm text-muted">
+            New here?{" "}
+            <Link href="/register" className="text-accent hover:underline">
+              Create account
+            </Link>
+          </p>
+        </div>
+        <Suspense fallback={<p className="text-center text-muted">Loading…</p>}>
+          <LoginForm />
+        </Suspense>
+      </div>
     </div>
   );
 }

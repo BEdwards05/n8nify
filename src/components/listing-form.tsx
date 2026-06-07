@@ -52,9 +52,7 @@ export function ListingForm({
       formData.append("submitForReview", String(submitForReview));
       if (file) formData.append("workflow", file);
 
-      const url = listing
-        ? `/api/listings/${listing.id}`
-        : "/api/listings";
+      const url = listing ? `/api/listings/${listing.id}` : "/api/listings";
       const method = listing ? "PATCH" : "POST";
 
       const res = await fetch(url, { method, body: formData });
@@ -70,13 +68,13 @@ export function ListingForm({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="max-w-xl space-y-6">
       <input
         required
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Title"
-        className="w-full rounded-md border border-border px-3 py-2"
+        className="input"
       />
       <textarea
         required
@@ -84,7 +82,7 @@ export function ListingForm({
         onChange={(e) => setDescription(e.target.value)}
         placeholder="Description"
         rows={5}
-        className="w-full rounded-md border border-border px-3 py-2"
+        className="input resize-none"
       />
       <input
         type="number"
@@ -92,21 +90,21 @@ export function ListingForm({
         step="0.01"
         value={priceDollars}
         onChange={(e) => setPriceDollars(e.target.value)}
-        placeholder="Price (USD, 0 for free)"
-        className="w-full rounded-md border border-border px-3 py-2"
+        placeholder="Price (USD, 0 = free)"
+        className="input"
       />
       <div>
-        <p className="mb-2 text-sm font-medium">Categories</p>
+        <p className="section-label mb-3">Categories</p>
         <div className="flex flex-wrap gap-2">
           {categories.map((cat) => (
             <button
               key={cat.id}
               type="button"
               onClick={() => toggleCategory(cat.id)}
-              className={`rounded-full border px-3 py-1 text-sm ${
+              className={`chip cursor-pointer transition ${
                 categoryIds.includes(cat.id)
-                  ? "border-accent bg-accent/10 text-accent"
-                  : "border-border"
+                  ? "border-accent/40 bg-accent/10 text-accent"
+                  : "hover:bg-surface-hover"
               }`}
             >
               {cat.name}
@@ -115,23 +113,23 @@ export function ListingForm({
         </div>
       </div>
       <div>
-        <p className="mb-2 text-sm font-medium">
-          Workflow JSON {listing ? "(upload to replace)" : ""}
+        <p className="section-label mb-3">
+          Workflow JSON {listing ? "(replace)" : ""}
         </p>
         <input
           type="file"
           accept=".json,application/json"
           onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-          className="text-sm"
+          className="text-sm text-muted file:mr-4 file:rounded-full file:border-0 file:bg-surface file:px-4 file:py-2 file:text-sm file:text-foreground"
         />
       </div>
-      {error && <p className="text-sm text-red-600">{error}</p>}
-      <div className="flex gap-3">
+      {error && <p className="text-sm text-accent">{error}</p>}
+      <div className="flex gap-3 pt-2">
         <button
           type="button"
           disabled={loading}
           onClick={() => save(false)}
-          className="rounded-md border border-border px-4 py-2 text-sm hover:bg-background disabled:opacity-50"
+          className="btn btn-ghost disabled:opacity-50"
         >
           Save draft
         </button>
@@ -139,7 +137,7 @@ export function ListingForm({
           type="button"
           disabled={loading}
           onClick={() => save(true)}
-          className="rounded-md bg-accent px-4 py-2 text-sm text-white hover:bg-accent-hover disabled:opacity-50"
+          className="btn btn-primary disabled:opacity-50"
         >
           Submit for review
         </button>

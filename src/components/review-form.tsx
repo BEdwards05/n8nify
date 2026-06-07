@@ -16,20 +16,19 @@ export function ReviewForm({ listingId }: { listingId: string }) {
     });
     const data = await res.json();
     if (res.ok) {
-      setMessage("Review submitted!");
       window.location.reload();
     } else {
-      setMessage(data.error ?? "Failed to submit review");
+      setMessage(data.error ?? "Failed to submit");
     }
   }
 
   return (
-    <form onSubmit={submit} className="rounded-lg border border-border p-4">
-      <h3 className="mb-3 text-sm font-medium">Leave a review</h3>
+    <form onSubmit={submit} className="space-y-4 border border-line bg-surface p-5">
+      <p className="section-label">Leave a review</p>
       <select
         value={rating}
         onChange={(e) => setRating(Number(e.target.value))}
-        className="mb-3 w-full rounded-md border border-border px-3 py-2 text-sm"
+        className="input"
       >
         {[5, 4, 3, 2, 1].map((r) => (
           <option key={r} value={r}>
@@ -42,16 +41,13 @@ export function ReviewForm({ listingId }: { listingId: string }) {
         onChange={(e) => setBody(e.target.value)}
         required
         rows={3}
-        placeholder="Share your experience..."
-        className="mb-3 w-full rounded-md border border-border px-3 py-2 text-sm"
+        placeholder="How did this workflow work for you?"
+        className="input resize-none"
       />
-      <button
-        type="submit"
-        className="rounded-md bg-accent px-4 py-2 text-sm text-white hover:bg-accent-hover"
-      >
-        Submit review
+      <button type="submit" className="btn btn-primary">
+        Submit
       </button>
-      {message && <p className="mt-2 text-sm text-muted">{message}</p>}
+      {message && <p className="text-sm text-muted">{message}</p>}
     </form>
   );
 }

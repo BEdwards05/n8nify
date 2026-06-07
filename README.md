@@ -22,9 +22,11 @@ docker compose up -d postgres redis minio minio-init
 npm run db:push
 npm run db:seed
 
-# Run app
+# Run app (defaults to http://localhost:3001 — port 3000 is often taken)
 npm run dev
 ```
+
+Open **http://localhost:3001** (not 3000 if another app is running there).
 
 Default admin: `admin@n8nify.io` / `changeme123`
 

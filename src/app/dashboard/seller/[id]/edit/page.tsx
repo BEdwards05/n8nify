@@ -25,13 +25,16 @@ export default async function EditListingPage({ params }: Props) {
     .where(eq(listingCategories.listingId, id));
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10">
-      <h1 className="mb-8 text-2xl font-semibold">Edit listing</h1>
-      <ListingForm
-        categories={categories}
-        listing={listing}
-        selectedCategoryIds={selected.map((s) => s.categoryId)}
-      />
+    <div className="page-shell py-12 md:py-16">
+      <p className="section-label mb-2">Edit</p>
+      <h1 className="font-display text-3xl font-bold">{listing.title}</h1>
+      <div className="mt-10">
+        <ListingForm
+          categories={categories}
+          listing={listing}
+          selectedCategoryIds={selected.map((s) => s.categoryId)}
+        />
+      </div>
     </div>
   );
 }

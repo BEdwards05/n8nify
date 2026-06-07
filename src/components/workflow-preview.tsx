@@ -2,28 +2,21 @@ import type { WorkflowPreviewMetadata } from "@/lib/n8n/types";
 
 export function WorkflowPreview({ meta }: { meta: WorkflowPreviewMetadata }) {
   return (
-    <div className="space-y-5 rounded-lg border border-border bg-surface p-6">
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
+    <div className="space-y-8 border-t border-line pt-8">
+      <div className="flex flex-wrap gap-2">
+        <span className="chip text-accent border-accent/30 bg-accent/10">
           {meta.triggers[0] ?? "Manual"} trigger
         </span>
-        <span className="rounded-full bg-background px-3 py-1 text-xs text-muted">
-          {meta.nodeCount} nodes
-        </span>
-        <span className="rounded-full bg-background px-3 py-1 text-xs capitalize text-muted">
-          {meta.complexity}
-        </span>
+        <span className="chip">{meta.nodeCount} nodes</span>
+        <span className="chip capitalize">{meta.complexity}</span>
       </div>
 
       {meta.integrations.length > 0 && (
         <div>
-          <h3 className="mb-2 text-sm font-medium">Integrations</h3>
-          <div className="flex flex-wrap gap-2">
+          <p className="section-label mb-3">Integrations</p>
+          <div className="flex flex-wrap gap-x-4 gap-y-2">
             {meta.integrations.map((integration) => (
-              <span
-                key={integration}
-                className="rounded-md border border-border px-2.5 py-1 text-xs"
-              >
+              <span key={integration} className="text-sm text-foreground">
                 {integration}
               </span>
             ))}
@@ -33,10 +26,13 @@ export function WorkflowPreview({ meta }: { meta: WorkflowPreviewMetadata }) {
 
       {meta.credentialTypes.length > 0 && (
         <div>
-          <h3 className="mb-2 text-sm font-medium">Required credentials</h3>
-          <ul className="space-y-1 text-sm text-muted">
+          <p className="section-label mb-3">Required credentials</p>
+          <ul className="space-y-2">
             {meta.credentialTypes.map((cred) => (
-              <li key={cred}>• {cred}</li>
+              <li key={cred} className="flex items-center gap-2 text-sm text-muted">
+                <span className="h-1 w-1 rounded-full bg-accent" />
+                {cred}
+              </li>
             ))}
           </ul>
         </div>

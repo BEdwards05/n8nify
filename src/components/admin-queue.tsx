@@ -33,29 +33,26 @@ export function AdminQueue({ items }: { items: Item[] }) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="divide-y divide-line border-y border-line">
       {items.map(({ listing, creator, user }) => {
         const meta = listing.previewMetadata as WorkflowPreviewMetadata | null;
         return (
-          <div
-            key={listing.id}
-            className="rounded-lg border border-border p-5"
-          >
-            <h3 className="font-medium">{listing.title}</h3>
-            <p className="mt-1 text-sm text-muted">
-              by {creator?.displayName ?? user.name} ({user.email})
+          <div key={listing.id} className="py-6">
+            <h3 className="font-display text-lg font-semibold">{listing.title}</h3>
+            <p className="mt-1 text-sm text-muted-dim">
+              {creator?.displayName ?? user.name} · {user.email}
             </p>
-            <p className="mt-2 text-sm">{listing.description}</p>
+            <p className="mt-3 text-sm text-muted">{listing.description}</p>
             {meta && (
-              <p className="mt-2 text-xs text-muted">
+              <p className="mt-2 text-xs text-muted-dim">
                 {meta.nodeCount} nodes · {meta.integrations.join(", ")}
               </p>
             )}
-            <div className="mt-4 flex gap-2">
+            <div className="mt-4 flex gap-3">
               <button
                 type="button"
                 onClick={() => moderate(listing.id, "approve")}
-                className="rounded-md bg-green-700 px-3 py-1.5 text-sm text-white"
+                className="btn btn-primary"
               >
                 Approve
               </button>
@@ -65,7 +62,7 @@ export function AdminQueue({ items }: { items: Item[] }) {
                   const reason = prompt("Rejection reason:");
                   if (reason) moderate(listing.id, "reject", reason);
                 }}
-                className="rounded-md border border-border px-3 py-1.5 text-sm"
+                className="btn btn-ghost"
               >
                 Reject
               </button>
