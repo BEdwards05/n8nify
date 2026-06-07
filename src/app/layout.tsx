@@ -1,11 +1,19 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { DM_Sans, Geist_Mono, Syne } from "next/font/google";
+import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const syne = Syne({
+  variable: "--font-syne",
   subsets: ["latin"],
+  weight: ["600", "700", "800"],
+});
+
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
 });
 
 const geistMono = Geist_Mono({
@@ -31,25 +39,12 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${syne.variable} ${dmSans.variable} ${geistMono.variable} h-full`}
     >
-      <body className="flex min-h-full flex-col">
+      <body className="flex min-h-full flex-col antialiased">
         <SiteHeader />
         <main className="flex-1">{children}</main>
-        <footer className="border-t border-border py-8 text-center text-sm text-muted">
-          <p>© {new Date().getFullYear()} n8nify.io — n8n workflow marketplace</p>
-          <div className="mt-2 flex justify-center gap-4">
-            <a href="/terms" className="hover:text-foreground">
-              Terms
-            </a>
-            <a href="/privacy" className="hover:text-foreground">
-              Privacy
-            </a>
-            <a href="/content-policy" className="hover:text-foreground">
-              Content Policy
-            </a>
-          </div>
-        </footer>
+        <SiteFooter />
       </body>
     </html>
   );

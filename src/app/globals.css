@@ -1,30 +1,231 @@
 @import "tailwindcss";
 
 :root {
-  --background: #faf9f7;
-  --foreground: #1a1625;
-  --muted: #6b6578;
-  --accent: #4338ca;
-  --accent-hover: #3730a3;
-  --surface: #ffffff;
-  --border: #e8e4df;
-  --hero-overlay: rgba(26, 22, 37, 0.55);
+  --bg: #08080c;
+  --bg-elevated: #101018;
+  --fg: #f5f3ef;
+  --muted: #8b8796;
+  --muted-dim: #5c5868;
+  --accent: #ff5c35;
+  --accent-dim: #e04a28;
+  --accent-glow: rgba(255, 92, 53, 0.35);
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.14);
+  --surface: rgba(255, 255, 255, 0.03);
+  --surface-hover: rgba(255, 255, 255, 0.06);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--bg);
+  --color-foreground: var(--fg);
   --color-muted: var(--muted);
+  --color-muted-dim: var(--muted-dim);
   --color-accent: var(--accent);
-  --color-accent-hover: var(--accent-hover);
+  --color-accent-dim: var(--accent-dim);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
   --color-surface: var(--surface);
-  --color-border: var(--border);
-  --font-sans: var(--font-geist-sans);
+  --color-surface-hover: var(--surface-hover);
+  --color-elevated: var(--bg-elevated);
+  --font-sans: var(--font-dm-sans);
+  --font-display: var(--font-syne);
   --font-mono: var(--font-geist-mono);
 }
 
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-dm-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+.font-display {
+  font-family: var(--font-syne), system-ui, sans-serif;
+}
+
+/* Node grid atmosphere */
+.node-field {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.node-field::before {
+  content: "";
+  position: absolute;
+  inset: -50%;
+  background-image:
+    radial-gradient(circle at 20% 30%, var(--accent-glow) 0%, transparent 42%),
+    radial-gradient(circle at 80% 70%, rgba(120, 100, 255, 0.12) 0%, transparent 40%);
+  animation: drift 18s ease-in-out infinite alternate;
+}
+
+.node-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, black 20%, transparent 75%);
+  opacity: 0.5;
+}
+
+@keyframes drift {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(3%, 2%) scale(1.05);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-rise {
+  animation: rise 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-rise-delay-1 {
+  animation-delay: 0.1s;
+}
+.animate-rise-delay-2 {
+  animation-delay: 0.2s;
+}
+.animate-rise-delay-3 {
+  animation-delay: 0.35s;
+}
+
+/* Shared primitives */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+  padding: 0.625rem 1.25rem;
+}
+.btn-primary:hover {
+  background: var(--accent-dim);
+  box-shadow: 0 0 32px var(--accent-glow);
+}
+
+.btn-ghost {
+  color: var(--fg);
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+}
+.btn-ghost:hover {
+  background: var(--surface-hover);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.btn-ghost-light {
+  color: rgba(255, 255, 255, 0.85);
+  padding: 0.5rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(8px);
+}
+.btn-ghost-light:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.input {
+  width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  color: var(--fg);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.input::placeholder {
+  color: var(--muted-dim);
+}
+.input:focus {
+  border-color: rgba(255, 92, 53, 0.5);
+  box-shadow: 0 0 0 3px rgba(255, 92, 53, 0.12);
+}
+
+.input-hero {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 9999px;
+  padding: 0.875rem 1.25rem;
+  color: #fff;
+  backdrop-filter: blur(12px);
+}
+.input-hero::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+.input-hero:focus {
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 0 3px rgba(255, 92, 53, 0.2);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.divider {
+  height: 1px;
+  background: var(--line);
+  width: 100%;
+}
+
+.page-shell {
+  margin-inline: auto;
+  max-width: 72rem;
+  padding-inline: 1.25rem;
+}
+
+.section-label {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
 }

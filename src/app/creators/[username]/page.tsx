@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ListingCard } from "@/components/listing-card";
+import { ListingRow } from "@/components/listing-row";
 import { getCreatorByUsername } from "@/lib/queries/listings";
 import type { WorkflowPreviewMetadata } from "@/lib/n8n/types";
 
@@ -19,31 +19,30 @@ export default async function CreatorProfilePage({ params }: Props) {
   if (!creator) notFound();
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10">
-      <div className="mb-10">
-        <h1 className="mb-2 text-3xl font-semibold">
-          {creator.profile.displayName}
-        </h1>
-        <p className="text-muted">@{creator.profile.username}</p>
-        {creator.profile.bio && (
-          <p className="mt-4 max-w-2xl">{creator.profile.bio}</p>
-        )}
-      </div>
+    <div className="page-shell py-12 md:py-16">
+      <p className="section-label mb-2">Creator</p>
+      <h1 className="font-display text-4xl font-bold">
+        {creator.profile.displayName}
+      </h1>
+      <p className="mt-1 text-muted">@{creator.profile.username}</p>
+      {creator.profile.bio && (
+        <p className="mt-6 max-w-2xl text-lg text-muted">{creator.profile.bio}</p>
+      )}
 
-      <h2 className="mb-6 text-xl font-semibold">Published workflows</h2>
+      <h2 className="font-display mt-14 text-xl font-semibold">Published</h2>
       {creator.listings.length === 0 ? (
-        <p className="text-muted">No published workflows yet.</p>
+        <p className="mt-6 text-muted">No published workflows yet.</p>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {creator.listings.map((listing) => (
-            <ListingCard
+        <div className="mt-6 divide-y divide-line border-y border-line">
+          {creator.listings.map((listing, i) => (
+            <ListingRow
               key={listing.id}
+              index={i}
               slug={listing.slug}
               title={listing.title}
               description={listing.description}
               priceCents={listing.priceCents}
               creatorName={creator.profile.displayName}
-              creatorUsername={creator.profile.username}
               previewMetadata={
                 listing.previewMetadata as WorkflowPreviewMetadata | null
               }
@@ -51,12 +50,6 @@ export default async function CreatorProfilePage({ params }: Props) {
           ))}
         </div>
       )}
-
-      <p className="mt-8">
-        <Link href="/workflows" className="text-accent hover:underline">
-          Browse all workflows
-        </Link>
-      </p>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandLogo } from "@/components/brand-logo";
 import { getSession } from "@/lib/auth-server";
 
 export async function SiteHeader() {
@@ -6,46 +7,50 @@ export async function SiteHeader() {
   const role = (session?.user as { role?: string } | undefined)?.role;
 
   return (
-    <header className="border-b border-border bg-surface/80 backdrop-blur-sm sticky top-0 z-50">
-      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
-        <Link href="/" className="text-lg font-semibold tracking-tight">
-          n8n<span className="text-accent">ify</span>
-        </Link>
-        <nav className="flex items-center gap-6 text-sm">
-          <Link href="/workflows" className="text-muted hover:text-foreground">
+    <header className="sticky top-0 z-50 border-b border-line bg-background/75 backdrop-blur-xl">
+      <div className="page-shell flex h-[3.75rem] items-center justify-between">
+        <BrandLogo />
+        <nav className="flex items-center gap-1 text-sm sm:gap-2">
+          <Link
+            href="/workflows"
+            className="rounded-full px-3 py-1.5 text-muted transition hover:bg-surface-hover hover:text-foreground"
+          >
             Workflows
           </Link>
           {session ? (
             <>
               <Link
                 href="/dashboard"
-                className="text-muted hover:text-foreground"
+                className="rounded-full px-3 py-1.5 text-muted transition hover:bg-surface-hover hover:text-foreground"
               >
                 Dashboard
               </Link>
               {(role === "creator" || role === "admin") && (
                 <Link
                   href="/dashboard/seller"
-                  className="text-muted hover:text-foreground"
+                  className="rounded-full px-3 py-1.5 text-muted transition hover:bg-surface-hover hover:text-foreground"
                 >
                   Sell
                 </Link>
               )}
               {role === "admin" && (
-                <Link href="/admin" className="text-muted hover:text-foreground">
+                <Link
+                  href="/admin"
+                  className="rounded-full px-3 py-1.5 text-muted transition hover:bg-surface-hover hover:text-foreground"
+                >
                   Admin
                 </Link>
               )}
             </>
           ) : (
             <>
-              <Link href="/login" className="text-muted hover:text-foreground">
+              <Link
+                href="/login"
+                className="rounded-full px-3 py-1.5 text-muted transition hover:bg-surface-hover hover:text-foreground"
+              >
                 Sign in
               </Link>
-              <Link
-                href="/register"
-                className="rounded-md bg-accent px-3 py-1.5 text-white hover:bg-accent-hover"
-              >
+              <Link href="/register" className="btn btn-primary ml-1">
                 Get started
               </Link>
             </>

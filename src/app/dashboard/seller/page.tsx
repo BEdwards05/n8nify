@@ -6,7 +6,7 @@ import { db } from "@/lib/db";
 import { creatorProfiles } from "../../../../drizzle/schema";
 import { getCreatorListings } from "@/lib/queries/listings";
 
-export const metadata = { title: "Seller Dashboard" };
+export const metadata = { title: "Seller" };
 
 export default async function SellerDashboardPage() {
   const session = await getSession();
@@ -23,63 +23,59 @@ export default async function SellerDashboardPage() {
   const listings = await getCreatorListings(session.user.id);
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-10">
-      <div className="mb-8 flex items-center justify-between">
+    <div className="page-shell py-12 md:py-16">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold">Seller dashboard</h1>
-          <p className="text-muted">Manage your workflow listings</p>
+          <p className="section-label mb-2">Creator</p>
+          <h1 className="font-display text-3xl font-bold">Listings</h1>
         </div>
-        <Link
-          href="/dashboard/seller/new"
-          className="rounded-md bg-accent px-4 py-2 text-sm text-white hover:bg-accent-hover"
-        >
+        <Link href="/dashboard/seller/new" className="btn btn-primary">
           New listing
         </Link>
       </div>
 
-      <div className="mb-8 rounded-lg border border-border p-4">
-        <p className="text-sm">
-          Stripe payouts:{" "}
-          <span className={profile.payoutsEnabled ? "text-green-700" : "text-muted"}>
-            {profile.payoutsEnabled ? "Enabled" : "Not connected"}
-          </span>
-        </p>
+      <div className="mt-8 flex items-center gap-3 text-sm">
+        <span className="text-muted">Stripe payouts</span>
+        <span
+          className={
+            profile.payoutsEnabled ? "text-accent" : "text-muted-dim"
+          }
+        >
+          {profile.payoutsEnabled ? "Connected" : "Not connected"}
+        </span>
         {!profile.payoutsEnabled && (
-          <a
-            href="/api/stripe/connect"
-            className="mt-2 inline-block text-sm text-accent hover:underline"
-          >
-            Connect Stripe to receive payouts
+          <a href="/api/stripe/connect" className="text-accent hover:underline">
+            Connect →
           </a>
         )}
       </div>
 
-      <div className="space-y-3">
+      <div className="mt-10 divide-y divide-line border-y border-line">
         {listings.map((listing) => (
           <div
             key={listing.id}
-            className="flex items-center justify-between rounded-lg border border-border p-4"
+            className="flex flex-col gap-2 py-5 sm:flex-row sm:items-center sm:justify-between"
           >
             <div>
               <p className="font-medium">{listing.title}</p>
-              <p className="text-sm capitalize text-muted">
+              <p className="text-sm capitalize text-muted-dim">
                 {listing.status}
                 {listing.status === "rejected" && listing.rejectionReason
                   ? ` — ${listing.rejectionReason}`
                   : ""}
               </p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-4 text-sm">
               <Link
                 href={`/dashboard/seller/${listing.id}/edit`}
-                className="text-sm text-accent hover:underline"
+                className="text-accent hover:underline"
               >
                 Edit
               </Link>
               {listing.status === "published" && (
                 <Link
                   href={`/workflows/${listing.slug}`}
-                  className="text-sm text-muted hover:underline"
+                  className="text-muted hover:text-foreground"
                 >
                   View
                 </Link>
@@ -88,7 +84,7 @@ export default async function SellerDashboardPage() {
           </div>
         ))}
         {listings.length === 0 && (
-          <p className="text-muted">No listings yet. Create your first workflow.</p>
+          <p className="py-8 text-muted">No listings yet.</p>
         )}
       </div>
     </div>

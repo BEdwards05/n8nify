@@ -50,7 +50,7 @@ export function PurchaseActions({
     return (
       <Link
         href={`/login?next=/workflows/${slug}`}
-        className="block w-full rounded-md bg-accent py-2.5 text-center text-sm font-medium text-white hover:bg-accent-hover"
+        className="btn btn-primary w-full"
       >
         Sign in to {priceCents === 0 ? "get" : "buy"}
       </Link>
@@ -60,25 +60,20 @@ export function PurchaseActions({
   if (owns) {
     return (
       <div className="space-y-3">
-        <a
-          href={`/api/workflows/${listingId}/download`}
-          className="block w-full rounded-md bg-accent py-2.5 text-center text-sm font-medium text-white hover:bg-accent-hover"
-        >
+        <a href={`/api/workflows/${listingId}/download`} className="btn btn-primary w-full">
           Download JSON
         </a>
         <button
           type="button"
           onClick={fetchImportUrl}
-          className="w-full rounded-md border border-border py-2.5 text-sm hover:bg-background"
+          className="btn btn-ghost w-full"
         >
-          Get Import URL
+          Get import URL
         </button>
         {importUrl && (
-          <div className="rounded-md bg-background p-3 text-xs break-all">
-            Paste in n8n → Import from URL:
-            <br />
-            <code>{importUrl}</code>
-          </div>
+          <p className="break-all rounded-xl border border-line bg-surface p-3 font-mono text-xs text-muted">
+            {importUrl}
+          </p>
         )}
       </div>
     );
@@ -89,10 +84,10 @@ export function PurchaseActions({
       type="button"
       disabled={loading}
       onClick={handlePurchase}
-      className="w-full rounded-md bg-accent py-2.5 text-sm font-medium text-white hover:bg-accent-hover disabled:opacity-50"
+      className="btn btn-primary w-full disabled:opacity-50"
     >
       {loading
-        ? "Processing..."
+        ? "Processing…"
         : priceCents === 0
           ? "Get workflow"
           : "Buy workflow"}

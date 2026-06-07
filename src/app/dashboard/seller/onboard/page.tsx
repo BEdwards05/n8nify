@@ -26,18 +26,19 @@ export default function SellerOnboardPage() {
   }
 
   return (
-    <div className="mx-auto max-w-md px-4 py-16">
-      <h1 className="mb-2 text-2xl font-semibold">Become a creator</h1>
-      <p className="mb-8 text-sm text-muted">
-        Set up your seller profile to start listing workflows.
+    <div className="page-shell py-12 md:py-16">
+      <p className="section-label mb-2">Creator setup</p>
+      <h1 className="font-display text-3xl font-bold">Your seller profile</h1>
+      <p className="mt-2 max-w-md text-muted">
+        This is how buyers will find you on the marketplace.
       </p>
-      <form onSubmit={onSubmit} className="space-y-4">
+      <form onSubmit={onSubmit} className="mt-10 max-w-md space-y-4">
         <input
           required
           value={displayName}
           onChange={(e) => setDisplayName(e.target.value)}
           placeholder="Display name"
-          className="w-full rounded-md border border-border px-3 py-2"
+          className="input"
         />
         <input
           required
@@ -45,20 +46,17 @@ export default function SellerOnboardPage() {
           onChange={(e) => setUsername(e.target.value.toLowerCase())}
           placeholder="Username"
           pattern="[a-z0-9_]{3,20}"
-          className="w-full rounded-md border border-border px-3 py-2"
+          className="input"
         />
         <textarea
           value={bio}
           onChange={(e) => setBio(e.target.value)}
           placeholder="Bio (optional)"
           rows={3}
-          className="w-full rounded-md border border-border px-3 py-2"
+          className="input resize-none"
         />
-        {error && <p className="text-sm text-red-600">{error}</p>}
-        <button
-          type="submit"
-          className="w-full rounded-md bg-accent py-2.5 text-white hover:bg-accent-hover"
-        >
+        {error && <p className="text-sm text-accent">{error}</p>}
+        <button type="submit" className="btn btn-primary w-full py-3">
           Continue
         </button>
       </form>
