@@ -1,0 +1,7 @@
+n8nify.io {
+	reverse_proxy app:3000
+}
+
+www.n8nify.io {
+	redir https://n8nify.io{uri} permanent
+}
