@@ -1,5 +1,10 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { ImpersonateMfaModal } from "@/components/impersonate-mfa-modal";
+import { authClient } from "@/lib/auth-client";
+
 type UserRow = {
   user: {
     id: string;
@@ -15,7 +20,19 @@ type UserRow = {
   listingCount: number;
 };
 
-export function AdminUsersTable({ items }: { items: UserRow[] }) {
+type Props = {
+  items: UserRow[];
+  currentUserId?: string;
+};
+
+export function AdminUsersTable({ items, currentUserId }: Props) {
+  const router = useRouter();
+  const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [error, setError] = useState("");
+  const [impersonateTarget, setImpersonateTarget] = useState<
+    UserRow["user"] | null
+  >(null);
+
   async function updateUser(
     userId: string,
     patch: { role?: string; banned?: boolean },
@@ -25,7 +42,41 @@ export function AdminUsersTable({ items }: { items: UserRow[] }) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(patch),
     });
-    window.location.reload();
+    router.refresh();
+  }
+
+  async function deleteUser(user: UserRow["user"]) {
+    const confirmed = window.confirm(
+      `Delete ${user.name} (${user.email})? This cannot be undone.`,
+    );
+    if (!confirmed) return;
+
+    setLoadingId(user.id);
+    setError("");
+
+    const { error: err } = await authClient.admin.removeUser({
+      userId: user.id,
+    });
+
+    if (err) {
+      setLoadingId(null);
+      setError(err.message ?? "Failed to delete user");
+      return;
+    }
+
+    await fetch("/api/admin/users/lifecycle-audit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        action: "delete",
+        targetUserId: user.id,
+        email: user.email,
+        name: user.name,
+      }),
+    });
+
+    setLoadingId(null);
+    router.refresh();
   }
 
   if (items.length === 0) {
@@ -33,70 +84,102 @@ export function AdminUsersTable({ items }: { items: UserRow[] }) {
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-left text-sm">
-        <thead>
-          <tr className="border-b border-line text-muted">
-            <th className="pb-3 pr-4 font-medium">User</th>
-            <th className="pb-3 pr-4 font-medium">Role</th>
-            <th className="pb-3 pr-4 font-medium">Activity</th>
-            <th className="pb-3 pr-4 font-medium">Status</th>
-            <th className="pb-3 font-medium">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-line">
-          {items.map(({ user, creator, purchaseCount, listingCount }) => (
-            <tr key={user.id}>
-              <td className="py-4 pr-4">
-                <p className="font-medium">{user.name}</p>
-                <p className="text-muted-dim">{user.email}</p>
-                {creator && (
-                  <p className="text-xs text-muted">@{creator.username}</p>
-                )}
-              </td>
-              <td className="py-4 pr-4 capitalize">{user.role}</td>
-              <td className="py-4 pr-4 text-muted">
-                {purchaseCount} purchases · {listingCount} listings
-                {user.twoFactorEnabled && (
-                  <span className="mt-1 block text-xs text-accent">2FA on</span>
-                )}
-              </td>
-              <td className="py-4 pr-4">
-                {user.banned ? (
-                  <span className="text-accent">Banned</span>
-                ) : (
-                  <span className="text-muted">Active</span>
-                )}
-              </td>
-              <td className="py-4">
-                <div className="flex flex-wrap gap-2">
-                  <select
-                    defaultValue={user.role}
-                    onChange={(e) =>
-                      updateUser(user.id, { role: e.target.value })
-                    }
-                    className="input w-auto py-1.5 text-xs"
-                  >
-                    <option value="buyer">Buyer</option>
-                    <option value="creator">Creator</option>
-                    <option value="moderator">Moderator</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      updateUser(user.id, { banned: !user.banned })
-                    }
-                    className="btn btn-ghost px-2 py-1 text-xs"
-                  >
-                    {user.banned ? "Unban" : "Ban"}
-                  </button>
-                </div>
-              </td>
+    <div>
+      {error && <p className="mb-4 text-sm text-accent">{error}</p>}
+      <ImpersonateMfaModal
+        open={impersonateTarget !== null}
+        onClose={() => setImpersonateTarget(null)}
+        targetUser={impersonateTarget}
+      />
+      <div className="overflow-x-auto">
+        <table className="w-full text-left text-sm">
+          <thead>
+            <tr className="border-b border-line text-muted">
+              <th className="pb-3 pr-4 font-medium">User</th>
+              <th className="pb-3 pr-4 font-medium">Role</th>
+              <th className="pb-3 pr-4 font-medium">Activity</th>
+              <th className="pb-3 pr-4 font-medium">Status</th>
+              <th className="pb-3 font-medium">Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="divide-y divide-line">
+            {items.map(({ user, creator, purchaseCount, listingCount }) => {
+              const isSelf = user.id === currentUserId;
+              const busy = loadingId === user.id;
+              return (
+                <tr key={user.id}>
+                  <td className="py-4 pr-4">
+                    <p className="font-medium">{user.name}</p>
+                    <p className="text-muted-dim">{user.email}</p>
+                    {creator && (
+                      <p className="text-xs text-muted">@{creator.username}</p>
+                    )}
+                  </td>
+                  <td className="py-4 pr-4 capitalize">{user.role}</td>
+                  <td className="py-4 pr-4 text-muted">
+                    {purchaseCount} purchases · {listingCount} listings
+                    {user.twoFactorEnabled && (
+                      <span className="mt-1 block text-xs text-accent">
+                        2FA on
+                      </span>
+                    )}
+                  </td>
+                  <td className="py-4 pr-4">
+                    {user.banned ? (
+                      <span className="text-accent">Banned</span>
+                    ) : (
+                      <span className="text-muted">Active</span>
+                    )}
+                  </td>
+                  <td className="py-4">
+                    <div className="flex flex-wrap gap-2">
+                      <select
+                        defaultValue={user.role}
+                        disabled={isSelf || busy}
+                        onChange={(e) =>
+                          updateUser(user.id, { role: e.target.value })
+                        }
+                        className="input w-auto py-1.5 text-xs disabled:opacity-50"
+                      >
+                        <option value="buyer">Buyer</option>
+                        <option value="creator">Creator</option>
+                        <option value="moderator">Moderator</option>
+                        <option value="admin">Admin</option>
+                      </select>
+                      <button
+                        type="button"
+                        disabled={isSelf || busy}
+                        onClick={() =>
+                          updateUser(user.id, { banned: !user.banned })
+                        }
+                        className="btn btn-ghost px-2 py-1 text-xs disabled:opacity-50"
+                      >
+                        {user.banned ? "Unban" : "Ban"}
+                      </button>
+                      <button
+                        type="button"
+                        disabled={isSelf || user.banned || busy}
+                        onClick={() => setImpersonateTarget(user)}
+                        className="btn btn-ghost px-2 py-1 text-xs disabled:opacity-50"
+                      >
+                        Impersonate
+                      </button>
+                      <button
+                        type="button"
+                        disabled={isSelf || busy}
+                        onClick={() => deleteUser(user)}
+                        className="btn btn-ghost px-2 py-1 text-xs text-accent disabled:opacity-50"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

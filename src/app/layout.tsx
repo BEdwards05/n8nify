@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans, Geist_Mono, Syne } from "next/font/google";
+import { ImpersonationBannerWrapper } from "@/components/impersonation-banner-wrapper";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import "./globals.css";
@@ -42,6 +43,7 @@ export default function RootLayout({
       className={`${syne.variable} ${dmSans.variable} ${geistMono.variable} h-full`}
     >
       <body className="flex min-h-full flex-col antialiased">
+        <ImpersonationBannerWrapper />
         <SiteHeader />
         <main className="flex-1">{children}</main>
         <SiteFooter />

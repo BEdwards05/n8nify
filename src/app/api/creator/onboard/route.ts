@@ -34,6 +34,13 @@ export async function POST(request: Request) {
     username = `creator_${session.user.id.slice(0, 6)}`;
   }
 
+  const currentUser = await db.query.users.findFirst({
+    where: eq(users.id, session.user.id),
+  });
+  if (!currentUser) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
+  }
+
   const existing = await db.query.creatorProfiles.findFirst({
     where: eq(creatorProfiles.userId, session.user.id),
   });
@@ -58,10 +65,13 @@ export async function POST(request: Request) {
     })
     .returning();
 
-  await db
-    .update(users)
-    .set({ role: "creator", updatedAt: new Date() })
-    .where(eq(users.id, session.user.id));
+  // Only promote buyers to creator — never overwrite admin or moderator roles.
+  if (currentUser.role === "buyer") {
+    await db
+      .update(users)
+      .set({ role: "creator", updatedAt: new Date() })
+      .where(eq(users.id, session.user.id));
+  }
 
   return NextResponse.json({ success: true, profile });
 }

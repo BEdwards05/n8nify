@@ -1,7 +1,8 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { twoFactor } from "better-auth/plugins";
+import { admin, twoFactor } from "better-auth/plugins";
 import { eq } from "drizzle-orm";
+import { authAdminPluginOptions } from "./auth-admin";
 import { db } from "./db";
 import * as schema from "../../drizzle/schema";
 
@@ -28,6 +29,7 @@ export const auth = betterAuth({
     twoFactor({
       issuer: "n8nify",
     }),
+    admin(authAdminPluginOptions),
   ],
   user: {
     additionalFields: {
@@ -67,6 +69,7 @@ export const auth = betterAuth({
     session: {
       create: {
         before: async (session) => {
+          if (session.impersonatedBy) return;
           const user = await db.query.users.findFirst({
             where: eq(schema.users.id, session.userId),
           });
