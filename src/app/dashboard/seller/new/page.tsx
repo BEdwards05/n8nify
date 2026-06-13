@@ -11,12 +11,12 @@ export default async function NewListingPage() {
   const categories = await getAllCategories();
 
   return (
-    <div className="page-shell py-12 md:py-16">
+    <>
       <p className="section-label mb-2">New</p>
       <h1 className="font-display text-3xl font-bold">List a workflow</h1>
       <div className="mt-10">
         <ListingForm categories={categories} />
       </div>
-    </div>
+    </>
   );
 }

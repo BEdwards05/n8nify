@@ -12,7 +12,12 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-export const userRoleEnum = pgEnum("user_role", ["buyer", "creator", "admin"]);
+export const userRoleEnum = pgEnum("user_role", [
+  "buyer",
+  "creator",
+  "moderator",
+  "admin",
+]);
 export const listingStatusEnum = pgEnum("listing_status", [
   "draft",
   "pending",
@@ -27,6 +32,8 @@ export const users = pgTable("users", {
   emailVerified: boolean("email_verified").notNull().default(false),
   image: text("image"),
   role: userRoleEnum("role").notNull().default("buyer"),
+  banned: boolean("banned").notNull().default(false),
+  twoFactorEnabled: boolean("two_factor_enabled").notNull().default(false),
   stripeCustomerId: text("stripe_customer_id"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
@@ -70,6 +77,16 @@ export const verifications = pgTable("verifications", {
   expiresAt: timestamp("expires_at").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const twoFactors = pgTable("two_factor", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  secret: text("secret").notNull(),
+  backupCodes: text("backup_codes").notNull(),
+  verified: boolean("verified").notNull().default(false),
 });
 
 export const creatorProfiles = pgTable("creator_profiles", {
@@ -183,17 +200,26 @@ export const reviews = pgTable(
   (table) => [index("reviews_listing_idx").on(table.listingId)],
 );
 
-export const adminAuditLog = pgTable("admin_audit_log", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  adminId: text("admin_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  action: text("action").notNull(),
-  targetType: text("target_type").notNull(),
-  targetId: text("target_id").notNull(),
-  metadata: jsonb("metadata").$type<Record<string, unknown>>(),
-  createdAt: timestamp("created_at").notNull().defaultNow(),
-});
+export const auditLog = pgTable(
+  "admin_audit_log",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    actorId: text("admin_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    action: text("action").notNull(),
+    targetType: text("target_type").notNull(),
+    targetId: text("target_id").notNull(),
+    summary: text("summary").notNull().default(""),
+    metadata: jsonb("metadata").$type<Record<string, unknown>>(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+  },
+  (table) => [
+    index("audit_log_actor_idx").on(table.actorId),
+    index("audit_log_action_idx").on(table.action),
+    index("audit_log_created_idx").on(table.createdAt),
+  ],
+);
 
 export const downloadTokens = pgTable("download_tokens", {
   id: uuid("id").defaultRandom().primaryKey(),

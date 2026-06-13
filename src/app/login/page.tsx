@@ -22,7 +22,14 @@ function LoginForm() {
         password,
         callbackURL: next,
       });
-      if (err) setError(err.message ?? "Sign in failed");
+      if (err) {
+        setError(
+          err.message?.toLowerCase().includes("banned") ||
+            err.status === 403
+            ? "This account has been suspended."
+            : (err.message ?? "Sign in failed"),
+        );
+      }
     } catch {
       setError(
         "Could not reach the auth server. Make sure you're on http://localhost:3001 (n8nify dev port).",

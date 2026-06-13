@@ -23,8 +23,8 @@ export default async function SellerDashboardPage() {
   const listings = await getCreatorListings(session.user.id);
 
   return (
-    <div className="page-shell py-12 md:py-16">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <>
+      <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="section-label mb-2">Creator</p>
           <h1 className="font-display text-3xl font-bold">Listings</h1>
@@ -34,12 +34,10 @@ export default async function SellerDashboardPage() {
         </Link>
       </div>
 
-      <div className="mt-8 flex items-center gap-3 text-sm">
+      <div className="mb-8 flex items-center gap-3 text-sm">
         <span className="text-muted">Stripe payouts</span>
         <span
-          className={
-            profile.payoutsEnabled ? "text-accent" : "text-muted-dim"
-          }
+          className={profile.payoutsEnabled ? "text-accent" : "text-muted-dim"}
         >
           {profile.payoutsEnabled ? "Connected" : "Not connected"}
         </span>
@@ -50,7 +48,7 @@ export default async function SellerDashboardPage() {
         )}
       </div>
 
-      <div className="mt-10 divide-y divide-line border-y border-line">
+      <div className="divide-y divide-line border-y border-line">
         {listings.map((listing) => (
           <div
             key={listing.id}
@@ -87,6 +85,6 @@ export default async function SellerDashboardPage() {
           <p className="py-8 text-muted">No listings yet.</p>
         )}
       </div>
-    </div>
+    </>
   );
 }

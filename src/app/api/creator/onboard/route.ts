@@ -12,13 +12,27 @@ export async function POST(request: Request) {
   }
 
   const body = await request.json().catch(() => ({}));
-  const displayName = body.displayName ?? session.user.name;
-  let username = (body.username ?? usernameFromEmail(session.user.email))
+  const displayName = String(body.displayName ?? "").trim();
+  let username = String(body.username ?? "")
     .toLowerCase()
     .replace(/[^a-z0-9_]/g, "");
-  const bio = body.bio ?? "";
+  const bio = String(body.bio ?? "").trim();
 
-  if (username.length < 3) username = `creator_${session.user.id.slice(0, 6)}`;
+  if (!displayName || displayName.length < 2) {
+    return NextResponse.json(
+      { error: "Display name is required" },
+      { status: 400 },
+    );
+  }
+
+  if (username.length < 3) {
+    username = usernameFromEmail(session.user.email)
+      .toLowerCase()
+      .replace(/[^a-z0-9_]/g, "");
+  }
+  if (username.length < 3) {
+    username = `creator_${session.user.id.slice(0, 6)}`;
+  }
 
   const existing = await db.query.creatorProfiles.findFirst({
     where: eq(creatorProfiles.userId, session.user.id),

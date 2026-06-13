@@ -26,9 +26,6 @@ export default function RegisterPage() {
         setError(err.message ?? "Registration failed");
         return;
       }
-      if (asCreator) {
-        await fetch("/api/creator/onboard", { method: "POST" });
-      }
     } catch {
       setError(
         "Could not reach the auth server. Make sure you're on http://localhost:3001.",
