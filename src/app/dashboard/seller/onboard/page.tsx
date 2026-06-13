@@ -26,7 +26,7 @@ export default function SellerOnboardPage() {
   }
 
   return (
-    <div className="page-shell py-12 md:py-16">
+    <>
       <p className="section-label mb-2">Creator setup</p>
       <h1 className="font-display text-3xl font-bold">Your seller profile</h1>
       <p className="mt-2 max-w-md text-muted">
@@ -60,6 +60,6 @@ export default function SellerOnboardPage() {
           Continue
         </button>
       </form>
-    </div>
+    </>
   );
 }

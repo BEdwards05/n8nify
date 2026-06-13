@@ -12,10 +12,12 @@ export default async function DashboardPage() {
   const purchases = await getUserPurchases(session.user.id);
 
   return (
-    <div className="page-shell py-12 md:py-16">
-      <p className="section-label mb-2">Account</p>
-      <h1 className="font-display text-3xl font-bold">Purchases</h1>
-      <p className="mt-1 text-muted">Workflows you own</p>
+    <>
+      <header className="mb-10">
+        <p className="section-label mb-2">Account</p>
+        <h1 className="font-display text-3xl font-bold">Purchases</h1>
+        <p className="mt-1 text-muted">Workflows you own</p>
+      </header>
 
       {purchases.length === 0 ? (
         <div className="mt-12 border-t border-line pt-12 text-center">
@@ -52,6 +54,6 @@ export default async function DashboardPage() {
           ))}
         </div>
       )}
-    </div>
+    </>
   );
 }

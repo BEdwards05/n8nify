@@ -1,25 +1,21 @@
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import { getSession } from "@/lib/auth-server";
+import { requirePermission } from "@/lib/auth-server";
 import { db } from "@/lib/db";
 import {
   creatorProfiles,
   listingCategories,
   listings,
-  users,
 } from "../../../../drizzle/schema";
 import { slugify } from "@/lib/slug";
 import { processWorkflowUpload } from "@/lib/workflow-service";
 
 export async function POST(request: Request) {
-  const session = await getSession();
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const role = (session.user as { role?: string }).role;
-  if (role !== "creator" && role !== "admin") {
-    return NextResponse.json({ error: "Creator role required" }, { status: 403 });
+  let session;
+  try {
+    session = await requirePermission("listings.create");
+  } catch {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const profile = await db.query.creatorProfiles.findFirst({

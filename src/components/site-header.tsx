@@ -1,10 +1,22 @@
 import Link from "next/link";
+import { eq } from "drizzle-orm";
 import { BrandLogo } from "@/components/brand-logo";
+import { UserMenu } from "@/components/user-menu";
 import { getSession } from "@/lib/auth-server";
+import { db } from "@/lib/db";
+import { users } from "../../drizzle/schema";
 
 export async function SiteHeader() {
   const session = await getSession();
-  const role = (session?.user as { role?: string } | undefined)?.role;
+  let role: string | undefined;
+
+  if (session) {
+    const user = await db.query.users.findFirst({
+      where: eq(users.id, session.user.id),
+      columns: { role: true },
+    });
+    role = user?.role;
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-line bg-background/75 backdrop-blur-xl">
@@ -18,30 +30,11 @@ export async function SiteHeader() {
             Workflows
           </Link>
           {session ? (
-            <>
-              <Link
-                href="/dashboard"
-                className="rounded-full px-3 py-1.5 text-muted transition hover:bg-surface-hover hover:text-foreground"
-              >
-                Dashboard
-              </Link>
-              {(role === "creator" || role === "admin") && (
-                <Link
-                  href="/dashboard/seller"
-                  className="rounded-full px-3 py-1.5 text-muted transition hover:bg-surface-hover hover:text-foreground"
-                >
-                  Sell
-                </Link>
-              )}
-              {role === "admin" && (
-                <Link
-                  href="/admin"
-                  className="rounded-full px-3 py-1.5 text-muted transition hover:bg-surface-hover hover:text-foreground"
-                >
-                  Admin
-                </Link>
-              )}
-            </>
+            <UserMenu
+              name={session.user.name}
+              email={session.user.email}
+              role={role}
+            />
           ) : (
             <>
               <Link

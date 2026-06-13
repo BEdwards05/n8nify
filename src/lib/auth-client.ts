@@ -1,8 +1,7 @@
 import { createAuthClient } from "better-auth/react";
+import { twoFactorClient } from "better-auth/client/plugins";
 
 function getAuthBaseURL(): string {
-  // Always use the current origin in the browser so auth hits the same
-  // server you're viewing (avoids port 3000 vs 3001 mismatches locally).
   if (typeof window !== "undefined") {
     return window.location.origin;
   }
@@ -11,4 +10,9 @@ function getAuthBaseURL(): string {
 
 export const authClient = createAuthClient({
   baseURL: getAuthBaseURL(),
+  plugins: [
+    twoFactorClient({
+      twoFactorPage: "/two-factor",
+    }),
+  ],
 });

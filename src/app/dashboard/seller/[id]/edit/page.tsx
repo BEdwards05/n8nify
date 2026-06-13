@@ -25,7 +25,7 @@ export default async function EditListingPage({ params }: Props) {
     .where(eq(listingCategories.listingId, id));
 
   return (
-    <div className="page-shell py-12 md:py-16">
+    <>
       <p className="section-label mb-2">Edit</p>
       <h1 className="font-display text-3xl font-bold">{listing.title}</h1>
       <div className="mt-10">
@@ -35,6 +35,6 @@ export default async function EditListingPage({ params }: Props) {
           selectedCategoryIds={selected.map((s) => s.categoryId)}
         />
       </div>
-    </div>
+    </>
   );
 }
