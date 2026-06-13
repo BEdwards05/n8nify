@@ -1,4 +1,6 @@
+import { AdminCreateUserForm } from "@/components/admin-create-user-form";
 import { AdminUsersTable } from "@/components/admin-users-table";
+import { getSession } from "@/lib/auth-server";
 import { getAdminUsers, getAdminUserStats } from "@/lib/queries/users";
 
 type Props = {
@@ -8,6 +10,7 @@ type Props = {
 export const metadata = { title: "User management" };
 
 export default async function AdminUsersPage({ searchParams }: Props) {
+  const session = await getSession();
   const params = await searchParams;
   const page = Number(params.page ?? "1");
   const { items, total, limit } = await getAdminUsers({
@@ -20,13 +23,16 @@ export default async function AdminUsersPage({ searchParams }: Props) {
 
   return (
     <>
-      <header className="mb-10">
-        <p className="section-label mb-2">Admin</p>
-        <h1 className="font-display text-3xl font-bold">Users</h1>
-        <p className="mt-1 text-muted">
-          {stats.total} users · {stats.creators} creators · {stats.moderators}{" "}
-          moderators · {stats.banned} banned
-        </p>
+      <header className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="section-label mb-2">Admin</p>
+          <h1 className="font-display text-3xl font-bold">Users</h1>
+          <p className="mt-1 text-muted">
+            {stats.total} users · {stats.creators} creators · {stats.moderators}{" "}
+            moderators · {stats.banned} banned
+          </p>
+        </div>
+        <AdminCreateUserForm />
       </header>
 
       <form className="mb-8 flex flex-col gap-3 sm:flex-row">
@@ -53,6 +59,7 @@ export default async function AdminUsersPage({ searchParams }: Props) {
       </form>
 
       <AdminUsersTable
+        currentUserId={session?.user.id}
         items={items.map((row) => ({
           ...row,
           user: {

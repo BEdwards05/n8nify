@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
+import { SellerSubnav } from "@/components/seller-subnav";
 import { getSession } from "@/lib/auth-server";
 import { getUserById } from "@/lib/queries/users";
 
-export default async function DashboardLayout({
+export default async function SellerLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -14,5 +15,12 @@ export default async function DashboardLayout({
   if (!data) redirect("/login");
   if (data.user.banned) redirect("/banned");
 
-  return <div className="page-shell py-10 md:py-14">{children}</div>;
+  const showSubnav = data.creatorProfile != null;
+
+  return (
+    <div>
+      {showSubnav && <SellerSubnav />}
+      <div className={showSubnav ? "mt-8" : undefined}>{children}</div>
+    </div>
+  );
 }

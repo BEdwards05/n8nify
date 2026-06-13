@@ -1,5 +1,7 @@
 import { createAuthClient } from "better-auth/react";
+import { adminClient } from "better-auth/client/plugins";
 import { twoFactorClient } from "better-auth/client/plugins";
+import { authAdminPluginOptions } from "./auth-admin";
 
 function getAuthBaseURL(): string {
   if (typeof window !== "undefined") {
@@ -13,6 +15,10 @@ export const authClient = createAuthClient({
   plugins: [
     twoFactorClient({
       twoFactorPage: "/two-factor",
+    }),
+    adminClient({
+      ac: authAdminPluginOptions.ac,
+      roles: authAdminPluginOptions.roles,
     }),
   ],
 });

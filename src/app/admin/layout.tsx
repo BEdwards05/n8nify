@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { DashboardNav } from "@/components/dashboard-nav";
+import { AdminSubnav } from "@/components/admin-subnav";
 import {
   getSession,
   getUserRole,
@@ -35,8 +35,8 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="page-shell py-12 md:py-16">
-      <DashboardNav role={role} variant="admin" />
+    <div className="page-shell py-10 md:py-14">
+      <AdminSubnav role={data.user.role} />
       <div className="mt-8">{children}</div>
     </div>
   );
